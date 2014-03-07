@@ -15,7 +15,7 @@
            [org.openscience.cdk.renderer.generators BasicSceneGenerator BasicBondGenerator BasicAtomGenerator]
            [org.openscience.cdk.renderer.visitor ]
            [org.openscience.cdk.templates MoleculeFactory]
-           [java.awt Rectangle ]
+           [java.awt Rectangle Graphics2D Color Graphics]
            [java.awt.image BufferedImage]
            [java.util ArrayList]
            [java.imageio]))
@@ -26,10 +26,9 @@
 (def width 200)
 (def height 200)
 
-
 ;the draw area and the image should be the same size
-(def rec (new Rectangle width height))
-(def image (new BufferedImage width height 1)) ; TYPE_INT+RGB is the last field = 1
+(def drawArea (Rectangle. width height))
+(def image (BufferedImage. width height 1)) ; TYPE_INT+RGB is the last field = 1
 
 
 ;Note that the make triazole is a submethod of Molecule Factory which we can access by
@@ -50,9 +49,10 @@
      (let [sdg (doto (new StructureDiagramGenerator)
                      (.setMolecule mol)
                      (.generateCoordinates))]
-          (.getMolecule sdg)))
+          (-> sdg (. getMolecule))
+       ))
 
-(makemol triazole)
+(def triazole2D (makemol triazole))
 ;generators make the image elements
 
 (defn make_generator []
@@ -64,23 +64,39 @@
 
 
 (def  gen (make_generator))
+(type gen)
 (type (first gen))
-
 
 ;the renderer needs to have a toolkit-specific font manager
 (def renderer (new AtomContainerRenderer gen (new AWTFontManager)))
 renderer
 (type renderer)
-(-> renderer (setup.))
-(renderer/setup)
-( -> renderer .setup)
-(doto renderer (. setup))
 
-(doto renderer (.setup triazole))
-(.setup renderer)
+(javadoc  AtomContainerRenderer)
+
+(-> renderer (. setup triazole2D drawArea))
+
+(def g2 (doto ()))
+
+(doto (Graphics2D) (. getGraphics))
+(defn- render-lines-to-graphics [lines paper-color height width
+                                 #^Graphics2D g w h ]
+  (doto g
+    (.setColor @paper-color)
+    (.fillRect 0 0 w h))
+    (draw-lines lines g (/ w @width) (/ h @height)))
+
+
+(defn- drawMols [^Graphics2D g width height ]
+  (doto g
+    (. getGraphics)
+    (.setColor Color.White)
+    (.fillRect 0 0 white height)))
+
 
 ;the call to 'setup' only needs to be done on the first paint
 renderer.setup(triazole, drawArea);
+
 
 
 ; paint the background
