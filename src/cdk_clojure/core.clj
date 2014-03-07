@@ -15,7 +15,7 @@
            [org.openscience.cdk.renderer.generators BasicSceneGenerator BasicBondGenerator BasicAtomGenerator]
            [org.openscience.cdk.renderer.visitor ]
            [org.openscience.cdk.templates MoleculeFactory]
-           [java.awt Rectangle ]
+           [java.awt Rectangle Graphics2D Color]
            [java.awt.image BufferedImage]
            [java.util ArrayList]
            [java.imageio]))
@@ -28,7 +28,7 @@
 
 
 ;the draw area and the image should be the same size
-(def rec (new Rectangle width height))
+(def drawArea (new Rectangle width height))
 (def image (new BufferedImage width height 1)) ; TYPE_INT+RGB is the last field = 1
 
 
@@ -52,7 +52,7 @@
                      (.generateCoordinates))]
           (.getMolecule sdg)))
 
-(makemol triazole)
+(def triazole2D (makemol triazole))
 ;generators make the image elements
 
 (defn make_generator []
@@ -64,70 +64,85 @@
 
 
 (def  gen (make_generator))
+(type gen)
 (type (first gen))
 
 
 ;the renderer needs to have a toolkit-specific font manager
-(def renderer (new AtomContainerRenderer gen (new AWTFontManager)))
-renderer
-(type renderer)
-(-> renderer (setup.))
-(renderer/setup)
-( -> renderer .setup)
-(doto renderer (. setup))
+(def renderer (AtomContainerRenderer. gen (new AWTFontManager)))
 
-(doto renderer (.setup triazole))
-(.setup renderer)
+
+; Run Setup Once
+(-> renderer (. setup triazole2D drawArea))
+(type renderer)
 
 ;the call to 'setup' only needs to be done on the first paint
-renderer.setup(triazole, drawArea);
+;renderer.setup(triazole, drawArea);
 
 
-; paint the background
-Graphics2D g2 = (Graphics2D)image.getGraphics();
-g2.setColor(Color.WHITE);
-g2.fillRect(0, 0, WIDTH, HEIGHT);
-
-;the paint method also needs a toolkit-specific renderer
-renderer.paint(triazole, new AWTDrawVisitor(g2));
-
-ImageIO.write((RenderedImage)image, "PNG", new File("triazole.png"));
+;; (defn render-to-graphics [width height ]
+;;   (let [^Graphics2D g (image) ]
+;;     (doto g
+;;       (. getGraphics)
+;;       (.setColor (. Color WHITE))
+;;       (.fillRect 0 0 width height))))
 
 
+;; ; paint the background
+;; Graphics2D g2 = (Graphics2D)image.getGraphics();
+;; g2.setColor(Color.WHITE);
+;; g2.fillRect(0, 0, WIDTH, HEIGHT);
 
-       ;the draw area and the image should be the same size
-       Rectangle drawArea = new Rectangle(WIDTH, HEIGHT);
-       Image image = new BufferedImage(
-               WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
-
-       ;any molecule will do
-       IMolecule triazole = MoleculeFactory.make123Triazole();
-       StructureDiagramGenerator sdg = new StructureDiagramGenerator();
-       sdg.setMolecule(triazole);
-       try {
-           sdg.generateCoordinates();
-       } catch (Exception e) { }
-       triazole = sdg.getMolecule();
+;; (defn- drawGraphics [^Graphics2D g w h ]
+;;   (doto g
+;;     (. getGraphics)
+;;     (.setColor (. Color WHITE))
+;;     (.fillRect 0 0 w h)))
 
 
-       ; generators make the image elements
-       List<IGenerator> generators = new ArrayList<IGenerator>();
-       generators.add(new BasicSceneGenerator());
-       generators.add(new BasicBondGenerator());
-       generators.add(new BasicAtomGenerator());
+;; (drawGraphics g width height)
 
-       ;the renderer needs to have a toolkit-specific font manager
-       Renderer renderer = new Renderer(generators, new AWTFontManager());
+;; ;the paint method also needs a toolkit-specific renderer
+;; renderer.paint(triazole, new AWTDrawVisitor(g2));
 
-       ;the call to 'setup' only needs to be done on the first paint
-       renderer.setup(triazole, drawArea);
+;; ImageIO.write((RenderedImage)image, "PNG", new File("triazole.png"));
 
-       ;paint the background
-       Graphics2D g2 = (Graphics2D)image.getGraphics();
-       g2.setColor(Color.WHITE);
-       g2.fillRect(0, 0, WIDTH, HEIGHT);
 
-       ;;the paint method also needs a toolkit-specific renderer
-       renderer.paintMolecule(triazole, new AWTDrawVisitor(g2));
 
-       ImageIO.write((RenderedImage)image, "PNG", new File("triazole.png"));
+;;        ;the draw area and the image should be the same size
+;;        Rectangle drawArea = new Rectangle(WIDTH, HEIGHT);
+;;        Image image = new BufferedImage(
+;;                WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+
+;;        ;any molecule will do
+;;        IMolecule triazole = MoleculeFactory.make123Triazole();
+;;        StructureDiagramGenerator sdg = new StructureDiagramGenerator();
+;;        sdg.setMolecule(triazole);
+;;        try {
+;;            sdg.generateCoordinates();
+;;        } catch (Exception e) { }
+;;        triazole = sdg.getMolecule();
+
+
+;;        ; generators make the image elements
+;;        List<IGenerator> generators = new ArrayList<IGenerator>();
+;;        generators.add(new BasicSceneGenerator());
+;;        generators.add(new BasicBondGenerator());
+;;        generators.add(new BasicAtomGenerator());
+
+;;        ;the renderer needs to have a toolkit-specific font manager
+;;        Renderer renderer = new Renderer(generators, new AWTFontManager());
+
+;;        ;the call to 'setup' only needs to be done on the first paint
+;;        renderer.setup(triazole, drawArea);
+
+;;        ;paint the background
+;;        Graphics2D g2 = (Graphics2D)image.getGraphics();
+;;        g2.setColor(Color.WHITE);
+;;        g2.fillRect(0, 0, WIDTH, HEIGHT);
+
+;;        ;;the paint method also needs a toolkit-specific renderer
+;;        renderer.paintMolecule(triazole, new AWTDrawVisitor(g2));
+
+;;        ImageIO.write((RenderedImage)image, "PNG", new File("triazole.png"));
+
