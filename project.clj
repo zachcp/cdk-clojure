@@ -32,7 +32,7 @@
                  [org.openscience.cdk/cdk-io "1.5.5"]
                  [org.openscience.cdk/cdk-ioformats "1.5.5"]
                  [org.openscience.cdk/cdk-ionpot "1.5.5"]
-                 ;;[org.openscience.cdk/cdk-iordf "1.5.5"]
+                 ;[org.openscience.cdk/cdk-iordf "1.5.5"]
                  [org.openscience.cdk/cdk-isomorphism "1.5.5"]
                  [org.openscience.cdk/cdk-libiocml "1.5.5"]
                  [org.openscience.cdk/cdk-libiomd "1.5.5"]
@@ -67,6 +67,7 @@
                  ;[net.sourceforge.jmol/jmol "13.0.14"]
                  [prismatic/schema   "0.2.0"]
                  [prismatic/plumbing "0.2.0"]
+                 [seesaw "1.4.4"]
                   ]
 
   :repositories [["ebi-repo" "http://www.ebi.ac.uk/intact/maven/nexus/content/repositories/ebi-repo" ]]
