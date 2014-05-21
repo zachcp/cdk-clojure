@@ -7,6 +7,7 @@
   :main ^:skip-aot cdk-clojure.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}}
+  :plugins [[lein-gorilla "0.2.0"]]
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [org.openscience.cdk/cdk-annotation "1.5.5"]
                  [org.openscience.cdk/cdk-atomtype "1.5.5"]
@@ -68,6 +69,7 @@
                  [prismatic/schema   "0.2.0"]
                  [prismatic/plumbing "0.2.0"]
                  [seesaw "1.4.4"]
+                 [hiccup "1.0.5"]
                   ]
 
   :repositories [["ebi-repo" "http://www.ebi.ac.uk/intact/maven/nexus/content/repositories/ebi-repo" ]]
