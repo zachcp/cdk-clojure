@@ -70,6 +70,7 @@
                  [prismatic/plumbing "0.2.0"]
                  [seesaw "1.4.4"]
                  [hiccup "1.0.5"]
+                 [org.clojars.pallix/analemma "1.0.0"]
                   ]
 
   :repositories [["ebi-repo" "http://www.ebi.ac.uk/intact/maven/nexus/content/repositories/ebi-repo" ]]
