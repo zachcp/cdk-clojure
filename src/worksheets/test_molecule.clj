@@ -8,8 +8,11 @@
 
 ;; @@
 (ns cdk-clojure.core
-  (:use [gorilla-repl html])
-  (:require [clojure.java.io :as io])
+  (:require [clojure.java.io :as io]
+            [gorilla-repl table latex html]
+            [gorilla-renderable.core]
+            [gorilla-plot.core]
+            [hiccup.core])
   (:import [org.openscience.cdk.layout StructureDiagramGenerator]
            [org.openscience.cdk.renderer AtomContainerRenderer ]
            [org.openscience.cdk.renderer.font AWTFontManager ]
@@ -20,9 +23,7 @@
            [java.awt.image BufferedImage]
            [java.util ArrayList]
            [javax.imageio ImageIO]
-           [gorilla-renderable.core]
-           [clojure.pprint]
-           [hiccup.core]))
+           [clojure.pprint]))
 
 ;(use '[gorilla-repl table latex html])
 ;; @@
@@ -90,12 +91,7 @@
 
 ;get symboy of atoms
 (.getSymbol (first atoms))
-;; @@
-;; =>
-;;; {"type":"html","content":"<span class='clj-string'>&quot;C&quot;</span>","value":"\"C\""}
-;; <=
 
-;; @@
 (def points (map #(.getPoint2d %)  atoms))
 
 ;; @@
@@ -104,24 +100,23 @@
 ;; <=
 
 ;; @@
-(use '[gorilla-repl table latex html])
+(use 'hiccup.core)
+
+(defn circle 
+  [x y]
+  [:circle {:cx x :cy y  :r 4 :stroke "black" :stroke-width 2 :fill "white"}])
+
+
+
 (defn basic_points
   [points]
-  (html [:svg {:height 100 :width 100}
-         (map #([circle {:cx (.x %)
-                           :cy (.y %)
-                           :r 40  :stroke "black" :stroke-width 4 :fill "white"}])
-                points
-                )]))
+   ( html [:svg {:height 100 :width 100}
+         (map #(circle (+ 50 (* 10 (.x %))) (+ 50 (* 10 (.y %)))) points)]))
+
+
+(basic_points points)
+(html-view (basic_points points))
 ;; @@
 ;; =>
-;;; {"type":"html","content":"<span class='clj-nil'>nil</span>","value":"nil"}
+;;; {"type":"html","content":"<svg height=\"100\" width=\"100\"><circle cx=\"50.0\" cy=\"50.0\" fill=\"white\" r=\"4\" stroke-width=\"2\" stroke=\"black\"></circle><circle cx=\"50.0\" cy=\"65.0\" fill=\"white\" r=\"4\" stroke-width=\"2\" stroke=\"black\"></circle><circle cx=\"35.734152255572695\" cy=\"69.63525491562422\" fill=\"white\" r=\"4\" stroke-width=\"2\" stroke=\"black\"></circle><circle cx=\"26.917373471185606\" cy=\"57.5\" fill=\"white\" r=\"4\" stroke-width=\"2\" stroke=\"black\"></circle><circle cx=\"35.734152255572695\" cy=\"45.36474508437579\" fill=\"white\" r=\"4\" stroke-width=\"2\" stroke=\"black\"></circle></svg>","value":"#gorilla_repl.html.HtmlView{:content \"<svg height=\\\"100\\\" width=\\\"100\\\"><circle cx=\\\"50.0\\\" cy=\\\"50.0\\\" fill=\\\"white\\\" r=\\\"4\\\" stroke-width=\\\"2\\\" stroke=\\\"black\\\"></circle><circle cx=\\\"50.0\\\" cy=\\\"65.0\\\" fill=\\\"white\\\" r=\\\"4\\\" stroke-width=\\\"2\\\" stroke=\\\"black\\\"></circle><circle cx=\\\"35.734152255572695\\\" cy=\\\"69.63525491562422\\\" fill=\\\"white\\\" r=\\\"4\\\" stroke-width=\\\"2\\\" stroke=\\\"black\\\"></circle><circle cx=\\\"26.917373471185606\\\" cy=\\\"57.5\\\" fill=\\\"white\\\" r=\\\"4\\\" stroke-width=\\\"2\\\" stroke=\\\"black\\\"></circle><circle cx=\\\"35.734152255572695\\\" cy=\\\"45.36474508437579\\\" fill=\\\"white\\\" r=\\\"4\\\" stroke-width=\\\"2\\\" stroke=\\\"black\\\"></circle></svg>\"}"}
 ;; <=
-
-;; @@
-(html)
-;; @@
-
-;; @@
-
-;; @@
