@@ -14,6 +14,8 @@
 (use 'analemma.svg)
 (use 'analemma.xml)
 (use 'analemma.charts)
+(use '[clojure.string :only (join split)])
+
 ;; @@
 ;; =>
 ;;; {"type":"html","content":"<span class='clj-nil'>nil</span>","value":"nil"}
@@ -215,33 +217,49 @@
                         ))
 
 (html-view (emit mol-svg-anim2))
-(emit mol-svg)
+;(emit mol-svg)
 ;(mol-svg-anim2)
 ;; @@
 ;; =>
-;;; {"type":"html","content":"<span class='clj-string'>&quot;&lt;?xml version=\\&quot;1.0\\&quot; encoding=\\&quot;UTF-8\\&quot;?&gt;&lt;svg x=\\&quot;100\\&quot; y=\\&quot;100\\&quot; xmlns:svg=\\&quot;http://www.w3.org/2000/svg\\&quot; xmlns:xlink=\\&quot;http://www.w3.org/1999/xlink\\&quot; version=\\&quot;1.0\\&quot; xmlns=\\&quot;http://www.w3.org/2000/svg\\&quot; &gt;&lt;g &gt;&lt;line style=\\&quot; stroke: #006600;  stroke-width: 3; \\&quot; x1=\\&quot;50\\&quot; y1=\\&quot;50\\&quot; x2=\\&quot;70\\&quot; y2=\\&quot;70\\&quot; /&gt;&lt;line style=\\&quot; stroke: #006600;  stroke-width: 3; \\&quot; x1=\\&quot;70\\&quot; y1=\\&quot;70\\&quot; x2=\\&quot;90\\&quot; y2=\\&quot;50\\&quot; /&gt;&lt;polygon style=\\&quot; fill: #FFFFFF;  stroke: #00000;  stroke-width: 3; \\&quot; points=\\&quot; 43.333333333333336,40 56.666666666666664,40 60,43.333333333333336 60,56.666666666666664 56.666666666666664,60 43.333333333333336,60 40,56.666666666666664 40,43.333333333333336\\&quot; /&gt;&lt;text y=\\&quot;55\\&quot; x=\\&quot;45\\&quot; style=\\&quot; font-size: 20; \\&quot; &gt;C&lt;/text&gt;&lt;polygon style=\\&quot; fill: #FFFFFF;  stroke: #00000;  stroke-width: 3; \\&quot; points=\\&quot; 63.333333333333336,60 76.66666666666667,60 80,63.333333333333336 80,76.66666666666667 76.66666666666667,80 63.333333333333336,80 60,76.66666666666667 60,63.333333333333336\\&quot; /&gt;&lt;text y=\\&quot;75\\&quot; x=\\&quot;65\\&quot; style=\\&quot; font-size: 20; \\&quot; &gt;C&lt;/text&gt;&lt;polygon style=\\&quot; fill: #FFFFFF;  stroke: #00000;  stroke-width: 3; \\&quot; points=\\&quot; 83.33333333333333,40 96.66666666666667,40 100,43.333333333333336 100,56.666666666666664 96.66666666666667,60 83.33333333333333,60 80,56.666666666666664 80,43.333333333333336\\&quot; /&gt;&lt;text y=\\&quot;55\\&quot; x=\\&quot;85\\&quot; style=\\&quot; font-size: 20; \\&quot; &gt;N&lt;/text&gt;&lt;/g&gt;&lt;/svg&gt;&quot;</span>","value":"\"<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\"?><svg x=\\\"100\\\" y=\\\"100\\\" xmlns:svg=\\\"http://www.w3.org/2000/svg\\\" xmlns:xlink=\\\"http://www.w3.org/1999/xlink\\\" version=\\\"1.0\\\" xmlns=\\\"http://www.w3.org/2000/svg\\\" ><g ><line style=\\\" stroke: #006600;  stroke-width: 3; \\\" x1=\\\"50\\\" y1=\\\"50\\\" x2=\\\"70\\\" y2=\\\"70\\\" /><line style=\\\" stroke: #006600;  stroke-width: 3; \\\" x1=\\\"70\\\" y1=\\\"70\\\" x2=\\\"90\\\" y2=\\\"50\\\" /><polygon style=\\\" fill: #FFFFFF;  stroke: #00000;  stroke-width: 3; \\\" points=\\\" 43.333333333333336,40 56.666666666666664,40 60,43.333333333333336 60,56.666666666666664 56.666666666666664,60 43.333333333333336,60 40,56.666666666666664 40,43.333333333333336\\\" /><text y=\\\"55\\\" x=\\\"45\\\" style=\\\" font-size: 20; \\\" >C</text><polygon style=\\\" fill: #FFFFFF;  stroke: #00000;  stroke-width: 3; \\\" points=\\\" 63.333333333333336,60 76.66666666666667,60 80,63.333333333333336 80,76.66666666666667 76.66666666666667,80 63.333333333333336,80 60,76.66666666666667 60,63.333333333333336\\\" /><text y=\\\"75\\\" x=\\\"65\\\" style=\\\" font-size: 20; \\\" >C</text><polygon style=\\\" fill: #FFFFFF;  stroke: #00000;  stroke-width: 3; \\\" points=\\\" 83.33333333333333,40 96.66666666666667,40 100,43.333333333333336 100,56.666666666666664 96.66666666666667,60 83.33333333333333,60 80,56.666666666666664 80,43.333333333333336\\\" /><text y=\\\"55\\\" x=\\\"85\\\" style=\\\" font-size: 20; \\\" >N</text></g></svg>\""}
+;;; {"type":"html","content":"<?xml version=\"1.0\" encoding=\"UTF-8\"?><svg x=\"100\" y=\"100\" xmlns:svg=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" version=\"1.0\" xmlns=\"http://www.w3.org/2000/svg\" ><g ><line style=\" stroke: #006600;  stroke-width: 3; \" x1=\"50\" y1=\"50\" x2=\"70\" y2=\"70\" /><line style=\" stroke: #006600;  stroke-width: 3; \" x1=\"70\" y1=\"70\" x2=\"90\" y2=\"50\" /><g ><polygon style=\" fill: #FFFFFF;  stroke: #00000;  stroke-width: 3; \" points=\" 43.333333333333336,40 56.666666666666664,40 60,43.333333333333336 60,56.666666666666664 56.666666666666664,60 43.333333333333336,60 40,56.666666666666664 40,43.333333333333336\" /><text y=\"55\" x=\"45\" style=\" font-size: 20; \" >C</text><animateTransform type=\"rotate\" dur=\"20\" repeatCount=\"indefinite\" to=\"-360 50 50\" from=\"0 50 50\" begin=\"0\" attributeName=\"transform\" fill=\"freeze\" /></g><g ><polygon style=\" fill: #FFFFFF;  stroke: #00000;  stroke-width: 3; \" points=\" 63.333333333333336,60 76.66666666666667,60 80,63.333333333333336 80,76.66666666666667 76.66666666666667,80 63.333333333333336,80 60,76.66666666666667 60,63.333333333333336\" /><text y=\"75\" x=\"65\" style=\" font-size: 20; \" >C</text><animateTransform type=\"rotate\" dur=\"20\" repeatCount=\"indefinite\" to=\"-360 70 70\" from=\"0 70 70\" begin=\"0\" attributeName=\"transform\" fill=\"freeze\" /></g><g ><polygon style=\" fill: #FFFFFF;  stroke: #00000;  stroke-width: 3; \" points=\" 83.33333333333333,40 96.66666666666667,40 100,43.333333333333336 100,56.666666666666664 96.66666666666667,60 83.33333333333333,60 80,56.666666666666664 80,43.333333333333336\" /><text y=\"55\" x=\"85\" style=\" font-size: 20; \" >C</text><animateTransform type=\"rotate\" dur=\"20\" repeatCount=\"indefinite\" to=\"-360 90 50\" from=\"0 90 50\" begin=\"0\" attributeName=\"transform\" fill=\"freeze\" /></g><animateTransform type=\"rotate\" dur=\"20\" repeatCount=\"indefinite\" to=\"360 70 70\" from=\"0 70 70\" begin=\"0\" attributeName=\"transform\" fill=\"freeze\" /></g></svg>","value":"#gorilla_repl.html.HtmlView{:content \"<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\"?><svg x=\\\"100\\\" y=\\\"100\\\" xmlns:svg=\\\"http://www.w3.org/2000/svg\\\" xmlns:xlink=\\\"http://www.w3.org/1999/xlink\\\" version=\\\"1.0\\\" xmlns=\\\"http://www.w3.org/2000/svg\\\" ><g ><line style=\\\" stroke: #006600;  stroke-width: 3; \\\" x1=\\\"50\\\" y1=\\\"50\\\" x2=\\\"70\\\" y2=\\\"70\\\" /><line style=\\\" stroke: #006600;  stroke-width: 3; \\\" x1=\\\"70\\\" y1=\\\"70\\\" x2=\\\"90\\\" y2=\\\"50\\\" /><g ><polygon style=\\\" fill: #FFFFFF;  stroke: #00000;  stroke-width: 3; \\\" points=\\\" 43.333333333333336,40 56.666666666666664,40 60,43.333333333333336 60,56.666666666666664 56.666666666666664,60 43.333333333333336,60 40,56.666666666666664 40,43.333333333333336\\\" /><text y=\\\"55\\\" x=\\\"45\\\" style=\\\" font-size: 20; \\\" >C</text><animateTransform type=\\\"rotate\\\" dur=\\\"20\\\" repeatCount=\\\"indefinite\\\" to=\\\"-360 50 50\\\" from=\\\"0 50 50\\\" begin=\\\"0\\\" attributeName=\\\"transform\\\" fill=\\\"freeze\\\" /></g><g ><polygon style=\\\" fill: #FFFFFF;  stroke: #00000;  stroke-width: 3; \\\" points=\\\" 63.333333333333336,60 76.66666666666667,60 80,63.333333333333336 80,76.66666666666667 76.66666666666667,80 63.333333333333336,80 60,76.66666666666667 60,63.333333333333336\\\" /><text y=\\\"75\\\" x=\\\"65\\\" style=\\\" font-size: 20; \\\" >C</text><animateTransform type=\\\"rotate\\\" dur=\\\"20\\\" repeatCount=\\\"indefinite\\\" to=\\\"-360 70 70\\\" from=\\\"0 70 70\\\" begin=\\\"0\\\" attributeName=\\\"transform\\\" fill=\\\"freeze\\\" /></g><g ><polygon style=\\\" fill: #FFFFFF;  stroke: #00000;  stroke-width: 3; \\\" points=\\\" 83.33333333333333,40 96.66666666666667,40 100,43.333333333333336 100,56.666666666666664 96.66666666666667,60 83.33333333333333,60 80,56.666666666666664 80,43.333333333333336\\\" /><text y=\\\"55\\\" x=\\\"85\\\" style=\\\" font-size: 20; \\\" >C</text><animateTransform type=\\\"rotate\\\" dur=\\\"20\\\" repeatCount=\\\"indefinite\\\" to=\\\"-360 90 50\\\" from=\\\"0 90 50\\\" begin=\\\"0\\\" attributeName=\\\"transform\\\" fill=\\\"freeze\\\" /></g><animateTransform type=\\\"rotate\\\" dur=\\\"20\\\" repeatCount=\\\"indefinite\\\" to=\\\"360 70 70\\\" from=\\\"0 70 70\\\" begin=\\\"0\\\" attributeName=\\\"transform\\\" fill=\\\"freeze\\\" /></g></svg>\"}"}
 ;; <=
 
 ;; @@
+; Sample Mol data
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (def mol {:bonds [{:order :single
-                   :x1 50
-                   :y1 50
-                   :x2 70
-                   :y2 90 }
+                   :x1 50 :y1 50
+                   :x2 70 :y2 70 }
                   {:order :single
-                   :x1 60
-                   :y1 70
-                   :x2 70
-                   :y2 50}]
+                   :x1 70 :y1 70
+                   :x2 90 :y2 50}]
           :atoms [{:element "O"
-                   :x1 50
-                   :y1 50}
+                   :x1 50 :y1 50}
                   {:element "C"
-                   :x1 70
-                   :y1 70}
+                   :x1 70 :y1 70}
                   {:element "0"
-                   :x1 90
-                   :y1 50}]})
+                   :x1 90 :y1 50}]})
+
+
+; Auxilliary Functions
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn makepolygon [x1 y1 fs]
+  ;take and x and y value as well as the fontsize and return a polygon to 
+  ; be used as a backstop behing the letters
+  (let [ dlarge (/ fs 2)
+         dsmall (/ (/ fs 2) 1.5)
+         ;topleft, topright, left top......
+         tlx (- x1 dsmall)  tly (- y1 dlarge)
+         trx (+ x1 dsmall)  try (- y1 dlarge) 
+         rtx (+ x1 dlarge)  rty (- y1 dsmall) 
+         rbx (+ x1 dlarge)  rby (+ y1 dsmall) 
+         brx (+ x1 dsmall)  bry (+ y1 dlarge) 
+         blx (- x1 dsmall)  bly (+ y1 dlarge) 
+         lbx (- x1 dlarge)  lby (+ y1 dsmall) 
+         ltx (- x1 dlarge)  lty (- y1 dsmall) ]
+    (polygon [tlx,tly trx,try rtx,rty rbx,rby brx,bry blx,bly lbx,lby ltx,lty])))
 
 
 (defn drawbond [bond]
@@ -257,13 +275,13 @@
         x1      (:x1 at)
         y1      (:y1 at)]
   (-> (group
-    (-> (makepolygon x1 y1 20)
+    (-> (makepolygon x1 y1 10)
         (style :fill "#FFFFFF" :stroke "#00000" :stroke-width 3))
     (-> (text {:x x1 :y y1} "C")
         (style :font-size 20)))
     (animate-transform :begin 0 :dur 20 :type :rotate
-         :from "0 90 50"
-         :to   "-360 90 50"
+         :from (join " "  ["0" x1 y1])
+         :to   (join " "  ["-360" x1 y1])                   
          :repeatCount :indefinite))))
 
 (defn drawmol [mol]
@@ -275,19 +293,22 @@
      ; this animation will keep  All of the Letters Correctly Rotating!
      (-> (group
 		  ;add lines
-           (apply concat lines)
-          ; drawnatoms)))))
-)))))
+          (apply group lines)
+          (apply group drawnatoms))
+          (animate-transform :begin 0 :dur 20 :type :rotate
+             :from (join " "  ["0" 50 50])
+             :to   (join " "  ["360" 50 50])                   
+             :repeatCount :indefinite) ))))
 
 
 
-;(html-view (emit (drawmol mol)))
+(html-view (emit (drawmol mol)))
 ;(emit (drawmol mol))
-(drawmol mol)
+;(drawmol mol)
 
 ;; @@
 ;; =>
-;;; {"type":"list-like","open":"<span class='clj-lazy-seq'>(<span>","close":"<span class='clj-lazy-seq'>)</span>","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:svg</span>","value":":svg"},{"type":"list-like","open":"<span class='clj-map'>{<span>","close":"<span class='clj-map'>}</span>","separator":", ","items":[{"type":"list-like","open":"","close":"","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:x</span>","value":":x"},{"type":"html","content":"<span class='clj-long'>100</span>","value":"100"}],"value":"[:x 100]"},{"type":"list-like","open":"","close":"","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:y</span>","value":":y"},{"type":"html","content":"<span class='clj-long'>100</span>","value":"100"}],"value":"[:y 100]"},{"type":"list-like","open":"","close":"","separator":" ","items":[{"type":"html","content":"<span class='clj-string'>&quot;xmlns:svg&quot;</span>","value":"\"xmlns:svg\""},{"type":"html","content":"<span class='clj-string'>&quot;http://www.w3.org/2000/svg&quot;</span>","value":"\"http://www.w3.org/2000/svg\""}],"value":"[\"xmlns:svg\" \"http://www.w3.org/2000/svg\"]"},{"type":"list-like","open":"","close":"","separator":" ","items":[{"type":"html","content":"<span class='clj-string'>&quot;xmlns:xlink&quot;</span>","value":"\"xmlns:xlink\""},{"type":"html","content":"<span class='clj-string'>&quot;http://www.w3.org/1999/xlink&quot;</span>","value":"\"http://www.w3.org/1999/xlink\""}],"value":"[\"xmlns:xlink\" \"http://www.w3.org/1999/xlink\"]"},{"type":"list-like","open":"","close":"","separator":" ","items":[{"type":"html","content":"<span class='clj-string'>&quot;version&quot;</span>","value":"\"version\""},{"type":"html","content":"<span class='clj-string'>&quot;1.0&quot;</span>","value":"\"1.0\""}],"value":"[\"version\" \"1.0\"]"},{"type":"list-like","open":"","close":"","separator":" ","items":[{"type":"html","content":"<span class='clj-string'>&quot;xmlns&quot;</span>","value":"\"xmlns\""},{"type":"html","content":"<span class='clj-string'>&quot;http://www.w3.org/2000/svg&quot;</span>","value":"\"http://www.w3.org/2000/svg\""}],"value":"[\"xmlns\" \"http://www.w3.org/2000/svg\"]"}],"value":"{:x 100, :y 100, \"xmlns:svg\" \"http://www.w3.org/2000/svg\", \"xmlns:xlink\" \"http://www.w3.org/1999/xlink\", \"version\" \"1.0\", \"xmlns\" \"http://www.w3.org/2000/svg\"}"},{"type":"html","content":"<span class='clj-unkown'>(:g (&quot;line&quot; {:style &quot; stroke: #006600;  stroke-width: 3; &quot;, :x1 50, :y1 50, :x2 70, :y2 90} &quot;line&quot; {:style &quot; stroke: #006600;  stroke-width: 3; &quot;, :x1 60, :y1 70, :x2 70, :y2 50}))</span>","value":"(:g (\"line\" {:style \" stroke: #006600;  stroke-width: 3; \", :x1 50, :y1 50, :x2 70, :y2 90} \"line\" {:style \" stroke: #006600;  stroke-width: 3; \", :x1 60, :y1 70, :x2 70, :y2 50}))"}],"value":"(:svg {:x 100, :y 100, \"xmlns:svg\" \"http://www.w3.org/2000/svg\", \"xmlns:xlink\" \"http://www.w3.org/1999/xlink\", \"version\" \"1.0\", \"xmlns\" \"http://www.w3.org/2000/svg\"} (:g (\"line\" {:style \" stroke: #006600;  stroke-width: 3; \", :x1 50, :y1 50, :x2 70, :y2 90} \"line\" {:style \" stroke: #006600;  stroke-width: 3; \", :x1 60, :y1 70, :x2 70, :y2 50})))"}
+;;; {"type":"html","content":"<?xml version=\"1.0\" encoding=\"UTF-8\"?><svg x=\"100\" y=\"100\" xmlns:svg=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" version=\"1.0\" xmlns=\"http://www.w3.org/2000/svg\" ><g ><g ><line style=\" stroke: #006600;  stroke-width: 3; \" x1=\"50\" y1=\"50\" x2=\"70\" y2=\"70\" /><line style=\" stroke: #006600;  stroke-width: 3; \" x1=\"70\" y1=\"70\" x2=\"90\" y2=\"50\" /></g><g ><g ><polygon style=\" fill: #FFFFFF;  stroke: #00000;  stroke-width: 3; \" points=\" 46.666666666666664,45 53.333333333333336,45 55,46.666666666666664 55,53.333333333333336 53.333333333333336,55 46.666666666666664,55 45,53.333333333333336 45,46.666666666666664\" /><text style=\" font-size: 20; \" x=\"50\" y=\"50\" >C</text><animateTransform type=\"rotate\" dur=\"20\" repeatCount=\"indefinite\" to=\"-360 50 50\" from=\"0 50 50\" begin=\"0\" attributeName=\"transform\" fill=\"freeze\" /></g><g ><polygon style=\" fill: #FFFFFF;  stroke: #00000;  stroke-width: 3; \" points=\" 66.66666666666667,65 73.33333333333333,65 75,66.66666666666667 75,73.33333333333333 73.33333333333333,75 66.66666666666667,75 65,73.33333333333333 65,66.66666666666667\" /><text style=\" font-size: 20; \" x=\"70\" y=\"70\" >C</text><animateTransform type=\"rotate\" dur=\"20\" repeatCount=\"indefinite\" to=\"-360 70 70\" from=\"0 70 70\" begin=\"0\" attributeName=\"transform\" fill=\"freeze\" /></g><g ><polygon style=\" fill: #FFFFFF;  stroke: #00000;  stroke-width: 3; \" points=\" 86.66666666666667,45 93.33333333333333,45 95,46.666666666666664 95,53.333333333333336 93.33333333333333,55 86.66666666666667,55 85,53.333333333333336 85,46.666666666666664\" /><text style=\" font-size: 20; \" x=\"90\" y=\"50\" >C</text><animateTransform type=\"rotate\" dur=\"20\" repeatCount=\"indefinite\" to=\"-360 90 50\" from=\"0 90 50\" begin=\"0\" attributeName=\"transform\" fill=\"freeze\" /></g></g><animateTransform type=\"rotate\" dur=\"20\" repeatCount=\"indefinite\" to=\"360 50 50\" from=\"0 50 50\" begin=\"0\" attributeName=\"transform\" fill=\"freeze\" /></g></svg>","value":"#gorilla_repl.html.HtmlView{:content \"<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\"?><svg x=\\\"100\\\" y=\\\"100\\\" xmlns:svg=\\\"http://www.w3.org/2000/svg\\\" xmlns:xlink=\\\"http://www.w3.org/1999/xlink\\\" version=\\\"1.0\\\" xmlns=\\\"http://www.w3.org/2000/svg\\\" ><g ><g ><line style=\\\" stroke: #006600;  stroke-width: 3; \\\" x1=\\\"50\\\" y1=\\\"50\\\" x2=\\\"70\\\" y2=\\\"70\\\" /><line style=\\\" stroke: #006600;  stroke-width: 3; \\\" x1=\\\"70\\\" y1=\\\"70\\\" x2=\\\"90\\\" y2=\\\"50\\\" /></g><g ><g ><polygon style=\\\" fill: #FFFFFF;  stroke: #00000;  stroke-width: 3; \\\" points=\\\" 46.666666666666664,45 53.333333333333336,45 55,46.666666666666664 55,53.333333333333336 53.333333333333336,55 46.666666666666664,55 45,53.333333333333336 45,46.666666666666664\\\" /><text style=\\\" font-size: 20; \\\" x=\\\"50\\\" y=\\\"50\\\" >C</text><animateTransform type=\\\"rotate\\\" dur=\\\"20\\\" repeatCount=\\\"indefinite\\\" to=\\\"-360 50 50\\\" from=\\\"0 50 50\\\" begin=\\\"0\\\" attributeName=\\\"transform\\\" fill=\\\"freeze\\\" /></g><g ><polygon style=\\\" fill: #FFFFFF;  stroke: #00000;  stroke-width: 3; \\\" points=\\\" 66.66666666666667,65 73.33333333333333,65 75,66.66666666666667 75,73.33333333333333 73.33333333333333,75 66.66666666666667,75 65,73.33333333333333 65,66.66666666666667\\\" /><text style=\\\" font-size: 20; \\\" x=\\\"70\\\" y=\\\"70\\\" >C</text><animateTransform type=\\\"rotate\\\" dur=\\\"20\\\" repeatCount=\\\"indefinite\\\" to=\\\"-360 70 70\\\" from=\\\"0 70 70\\\" begin=\\\"0\\\" attributeName=\\\"transform\\\" fill=\\\"freeze\\\" /></g><g ><polygon style=\\\" fill: #FFFFFF;  stroke: #00000;  stroke-width: 3; \\\" points=\\\" 86.66666666666667,45 93.33333333333333,45 95,46.666666666666664 95,53.333333333333336 93.33333333333333,55 86.66666666666667,55 85,53.333333333333336 85,46.666666666666664\\\" /><text style=\\\" font-size: 20; \\\" x=\\\"90\\\" y=\\\"50\\\" >C</text><animateTransform type=\\\"rotate\\\" dur=\\\"20\\\" repeatCount=\\\"indefinite\\\" to=\\\"-360 90 50\\\" from=\\\"0 90 50\\\" begin=\\\"0\\\" attributeName=\\\"transform\\\" fill=\\\"freeze\\\" /></g></g><animateTransform type=\\\"rotate\\\" dur=\\\"20\\\" repeatCount=\\\"indefinite\\\" to=\\\"360 50 50\\\" from=\\\"0 50 50\\\" begin=\\\"0\\\" attributeName=\\\"transform\\\" fill=\\\"freeze\\\" /></g></svg>\"}"}
 ;; <=
 
 ;; @@
@@ -307,10 +328,10 @@
 (def y [x x x])
 ;(svg {:x 100 :y 100} (apply concat y) )
 (def y (repeat 5 x))
-y
+;(html-view (emit y))
 ;; @@
 ;; =>
-;;; {"type":"list-like","open":"<span class='clj-lazy-seq'>(<span>","close":"<span class='clj-lazy-seq'>)</span>","separator":" ","items":[{"type":"list-like","open":"<span class='clj-lazy-seq'>(<span>","close":"<span class='clj-lazy-seq'>)</span>","separator":" ","items":[{"type":"html","content":"<span class='clj-string'>&quot;line&quot;</span>","value":"\"line\""},{"type":"list-like","open":"<span class='clj-map'>{<span>","close":"<span class='clj-map'>}</span>","separator":", ","items":[{"type":"list-like","open":"","close":"","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:style</span>","value":":style"},{"type":"html","content":"<span class='clj-string'>&quot; stroke: #006600;  stroke-width: 3; &quot;</span>","value":"\" stroke: #006600;  stroke-width: 3; \""}],"value":"[:style \" stroke: #006600;  stroke-width: 3; \"]"},{"type":"list-like","open":"","close":"","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:x1</span>","value":":x1"},{"type":"html","content":"<span class='clj-long'>50</span>","value":"50"}],"value":"[:x1 50]"},{"type":"list-like","open":"","close":"","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:y1</span>","value":":y1"},{"type":"html","content":"<span class='clj-long'>50</span>","value":"50"}],"value":"[:y1 50]"},{"type":"list-like","open":"","close":"","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:x2</span>","value":":x2"},{"type":"html","content":"<span class='clj-long'>50</span>","value":"50"}],"value":"[:x2 50]"},{"type":"list-like","open":"","close":"","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:y2</span>","value":":y2"},{"type":"html","content":"<span class='clj-long'>50</span>","value":"50"}],"value":"[:y2 50]"}],"value":"{:style \" stroke: #006600;  stroke-width: 3; \", :x1 50, :y1 50, :x2 50, :y2 50}"}],"value":"(\"line\" {:style \" stroke: #006600;  stroke-width: 3; \", :x1 50, :y1 50, :x2 50, :y2 50})"},{"type":"list-like","open":"<span class='clj-lazy-seq'>(<span>","close":"<span class='clj-lazy-seq'>)</span>","separator":" ","items":[{"type":"html","content":"<span class='clj-string'>&quot;line&quot;</span>","value":"\"line\""},{"type":"list-like","open":"<span class='clj-map'>{<span>","close":"<span class='clj-map'>}</span>","separator":", ","items":[{"type":"list-like","open":"","close":"","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:style</span>","value":":style"},{"type":"html","content":"<span class='clj-string'>&quot; stroke: #006600;  stroke-width: 3; &quot;</span>","value":"\" stroke: #006600;  stroke-width: 3; \""}],"value":"[:style \" stroke: #006600;  stroke-width: 3; \"]"},{"type":"list-like","open":"","close":"","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:x1</span>","value":":x1"},{"type":"html","content":"<span class='clj-long'>50</span>","value":"50"}],"value":"[:x1 50]"},{"type":"list-like","open":"","close":"","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:y1</span>","value":":y1"},{"type":"html","content":"<span class='clj-long'>50</span>","value":"50"}],"value":"[:y1 50]"},{"type":"list-like","open":"","close":"","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:x2</span>","value":":x2"},{"type":"html","content":"<span class='clj-long'>50</span>","value":"50"}],"value":"[:x2 50]"},{"type":"list-like","open":"","close":"","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:y2</span>","value":":y2"},{"type":"html","content":"<span class='clj-long'>50</span>","value":"50"}],"value":"[:y2 50]"}],"value":"{:style \" stroke: #006600;  stroke-width: 3; \", :x1 50, :y1 50, :x2 50, :y2 50}"}],"value":"(\"line\" {:style \" stroke: #006600;  stroke-width: 3; \", :x1 50, :y1 50, :x2 50, :y2 50})"},{"type":"list-like","open":"<span class='clj-lazy-seq'>(<span>","close":"<span class='clj-lazy-seq'>)</span>","separator":" ","items":[{"type":"html","content":"<span class='clj-string'>&quot;line&quot;</span>","value":"\"line\""},{"type":"list-like","open":"<span class='clj-map'>{<span>","close":"<span class='clj-map'>}</span>","separator":", ","items":[{"type":"list-like","open":"","close":"","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:style</span>","value":":style"},{"type":"html","content":"<span class='clj-string'>&quot; stroke: #006600;  stroke-width: 3; &quot;</span>","value":"\" stroke: #006600;  stroke-width: 3; \""}],"value":"[:style \" stroke: #006600;  stroke-width: 3; \"]"},{"type":"list-like","open":"","close":"","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:x1</span>","value":":x1"},{"type":"html","content":"<span class='clj-long'>50</span>","value":"50"}],"value":"[:x1 50]"},{"type":"list-like","open":"","close":"","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:y1</span>","value":":y1"},{"type":"html","content":"<span class='clj-long'>50</span>","value":"50"}],"value":"[:y1 50]"},{"type":"list-like","open":"","close":"","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:x2</span>","value":":x2"},{"type":"html","content":"<span class='clj-long'>50</span>","value":"50"}],"value":"[:x2 50]"},{"type":"list-like","open":"","close":"","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:y2</span>","value":":y2"},{"type":"html","content":"<span class='clj-long'>50</span>","value":"50"}],"value":"[:y2 50]"}],"value":"{:style \" stroke: #006600;  stroke-width: 3; \", :x1 50, :y1 50, :x2 50, :y2 50}"}],"value":"(\"line\" {:style \" stroke: #006600;  stroke-width: 3; \", :x1 50, :y1 50, :x2 50, :y2 50})"},{"type":"list-like","open":"<span class='clj-lazy-seq'>(<span>","close":"<span class='clj-lazy-seq'>)</span>","separator":" ","items":[{"type":"html","content":"<span class='clj-string'>&quot;line&quot;</span>","value":"\"line\""},{"type":"list-like","open":"<span class='clj-map'>{<span>","close":"<span class='clj-map'>}</span>","separator":", ","items":[{"type":"list-like","open":"","close":"","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:style</span>","value":":style"},{"type":"html","content":"<span class='clj-string'>&quot; stroke: #006600;  stroke-width: 3; &quot;</span>","value":"\" stroke: #006600;  stroke-width: 3; \""}],"value":"[:style \" stroke: #006600;  stroke-width: 3; \"]"},{"type":"list-like","open":"","close":"","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:x1</span>","value":":x1"},{"type":"html","content":"<span class='clj-long'>50</span>","value":"50"}],"value":"[:x1 50]"},{"type":"list-like","open":"","close":"","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:y1</span>","value":":y1"},{"type":"html","content":"<span class='clj-long'>50</span>","value":"50"}],"value":"[:y1 50]"},{"type":"list-like","open":"","close":"","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:x2</span>","value":":x2"},{"type":"html","content":"<span class='clj-long'>50</span>","value":"50"}],"value":"[:x2 50]"},{"type":"list-like","open":"","close":"","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:y2</span>","value":":y2"},{"type":"html","content":"<span class='clj-long'>50</span>","value":"50"}],"value":"[:y2 50]"}],"value":"{:style \" stroke: #006600;  stroke-width: 3; \", :x1 50, :y1 50, :x2 50, :y2 50}"}],"value":"(\"line\" {:style \" stroke: #006600;  stroke-width: 3; \", :x1 50, :y1 50, :x2 50, :y2 50})"},{"type":"list-like","open":"<span class='clj-lazy-seq'>(<span>","close":"<span class='clj-lazy-seq'>)</span>","separator":" ","items":[{"type":"html","content":"<span class='clj-string'>&quot;line&quot;</span>","value":"\"line\""},{"type":"list-like","open":"<span class='clj-map'>{<span>","close":"<span class='clj-map'>}</span>","separator":", ","items":[{"type":"list-like","open":"","close":"","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:style</span>","value":":style"},{"type":"html","content":"<span class='clj-string'>&quot; stroke: #006600;  stroke-width: 3; &quot;</span>","value":"\" stroke: #006600;  stroke-width: 3; \""}],"value":"[:style \" stroke: #006600;  stroke-width: 3; \"]"},{"type":"list-like","open":"","close":"","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:x1</span>","value":":x1"},{"type":"html","content":"<span class='clj-long'>50</span>","value":"50"}],"value":"[:x1 50]"},{"type":"list-like","open":"","close":"","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:y1</span>","value":":y1"},{"type":"html","content":"<span class='clj-long'>50</span>","value":"50"}],"value":"[:y1 50]"},{"type":"list-like","open":"","close":"","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:x2</span>","value":":x2"},{"type":"html","content":"<span class='clj-long'>50</span>","value":"50"}],"value":"[:x2 50]"},{"type":"list-like","open":"","close":"","separator":" ","items":[{"type":"html","content":"<span class='clj-keyword'>:y2</span>","value":":y2"},{"type":"html","content":"<span class='clj-long'>50</span>","value":"50"}],"value":"[:y2 50]"}],"value":"{:style \" stroke: #006600;  stroke-width: 3; \", :x1 50, :y1 50, :x2 50, :y2 50}"}],"value":"(\"line\" {:style \" stroke: #006600;  stroke-width: 3; \", :x1 50, :y1 50, :x2 50, :y2 50})"}],"value":"((\"line\" {:style \" stroke: #006600;  stroke-width: 3; \", :x1 50, :y1 50, :x2 50, :y2 50}) (\"line\" {:style \" stroke: #006600;  stroke-width: 3; \", :x1 50, :y1 50, :x2 50, :y2 50}) (\"line\" {:style \" stroke: #006600;  stroke-width: 3; \", :x1 50, :y1 50, :x2 50, :y2 50}) (\"line\" {:style \" stroke: #006600;  stroke-width: 3; \", :x1 50, :y1 50, :x2 50, :y2 50}) (\"line\" {:style \" stroke: #006600;  stroke-width: 3; \", :x1 50, :y1 50, :x2 50, :y2 50}))"}
+;;; {"type":"html","content":"<span class='clj-var'>#&#x27;user/y</span>","value":"#'user/y"}
 ;; <=
 
 ;; @@
@@ -371,6 +392,19 @@ y
 ;; <=
 
 ;; @@
+(defrecord Gene [start end height])
+(defrecord Module [start end height genes])
+(defrecord Domain [start end height module unit])
+
+(defrecord )
+
+(defprotocol toSVG)
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-symbol'>toSVG</span>","value":"toSVG"}
+;; <=
+
+;; @@
 ;; http://tutorials.jenkov.com/svg/rect-element.html
 (def ex-round-rects
      (svg
@@ -386,6 +420,14 @@ y
 ;; =>
 ;;; {"type":"html","content":"<?xml version=\"1.0\" encoding=\"UTF-8\"?><svg xmlns:svg=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" version=\"1.0\" xmlns=\"http://www.w3.org/2000/svg\" ><rect style=\" fill: #00cc00;  stroke: #006600; \" ry=\"5\" rx=\"5\" x=\"10\" y=\"10\" height=\"50\" width=\"50\" /><rect style=\" fill: #00cc00;  stroke: #006600; \" ry=\"10\" rx=\"10\" x=\"70\" y=\"10\" height=\"50\" width=\"50\" /><rect style=\" fill: #00cc00;  stroke: #006600; \" ry=\"15\" rx=\"15\" x=\"130\" y=\"10\" height=\"50\" width=\"50\" /></svg>","value":"#gorilla_repl.html.HtmlView{:content \"<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\"?><svg xmlns:svg=\\\"http://www.w3.org/2000/svg\\\" xmlns:xlink=\\\"http://www.w3.org/1999/xlink\\\" version=\\\"1.0\\\" xmlns=\\\"http://www.w3.org/2000/svg\\\" ><rect style=\\\" fill: #00cc00;  stroke: #006600; \\\" ry=\\\"5\\\" rx=\\\"5\\\" x=\\\"10\\\" y=\\\"10\\\" height=\\\"50\\\" width=\\\"50\\\" /><rect style=\\\" fill: #00cc00;  stroke: #006600; \\\" ry=\\\"10\\\" rx=\\\"10\\\" x=\\\"70\\\" y=\\\"10\\\" height=\\\"50\\\" width=\\\"50\\\" /><rect style=\\\" fill: #00cc00;  stroke: #006600; \\\" ry=\\\"15\\\" rx=\\\"15\\\" x=\\\"130\\\" y=\\\"10\\\" height=\\\"50\\\" width=\\\"50\\\" /></svg>\"}"}
 ;; <=
+
+;; @@
+
+;; @@
+
+;; @@
+
+;; @@
 
 ;; @@
 (def ex-circle (svg
