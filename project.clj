@@ -71,8 +71,10 @@
                  [seesaw "1.4.4"]
                  [hiccup "1.0.5"]
                  [org.clojars.pallix/analemma "1.0.0"]
-                 [org.openscience.cdk/jchempaint "3.3-1210"]
+                 ;[org.openscience.cdk/jchempaint "3.3-1210"]
+                 [org.openscience.jchempaint/jchempaint-hotfix "3.4"]
                   ]
 
   :repositories [["ebi-repo" "http://www.ebi.ac.uk/intact/maven/nexus/content/repositories/ebi-repo" ]
-                 ["plovdiv"  "http://ambit.uni-plovdiv.bg:8083/nexus/service/local/repositories/thirdparty/content" ]] )
+                 ;["plovdiv"  "http://ambit.uni-plovdiv.bg:8083/nexus/service/local/repositories/thirdparty/content" ]
+                 ] )
