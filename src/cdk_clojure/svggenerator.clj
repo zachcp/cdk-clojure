@@ -17,27 +17,15 @@
            [java.util ArrayList HashMap List]
            [javax.vecmath Point2d Vector2d Vector4d]
            [javax.imageio ImageIO]
-           [hiccup.core]))
+           [hiccup.core]
+           [analemma.svg] ))
+
+(use 'analemma.xml)
+
+; convert to allow conversion directl
 
 
-; convert to allow conversion directly from IAtonContianer Object
 ;import java.awt.geom.Rectangle2D.Double;
-;; import org.openscience.jchempaint.renderer.RendererModel;
-;; import org.openscience.jchempaint.renderer.elements.ArrowElement;
-;; import org.openscience.jchempaint.renderer.elements.AtomSymbolElement;
-;; import org.openscience.jchempaint.renderer.elements.ElementGroup;
-;; import org.openscience.jchempaint.renderer.elements.IRenderingElement;
-;; import org.openscience.jchempaint.renderer.elements.LineElement;
-;; import org.openscience.jchempaint.renderer.elements.OvalElement;
-;; import org.openscience.jchempaint.renderer.elements.PathElement;
-;; import org.openscience.jchempaint.renderer.elements.RectangleElement;
-;; import org.openscience.jchempaint.renderer.elements.TextElement;
-;; import org.openscience.jchempaint.renderer.elements.TextGroupElement;
-;; import org.openscience.jchempaint.renderer.elements.WedgeLineElement;
-;; import org.openscience.jchempaint.renderer.elements.WigglyLineElement;
-;; import org.openscience.jchempaint.renderer.font.FreeSansBoldGM;
-;; import org.openscience.jchempaint.renderer.font.GlyphMetrics;
-;; import org.openscience.jchempaint.renderer.font.IFontManager;
 
 ;; /**
 ;;  * We can only guarantee the same quality of SVG output everywhere
@@ -61,18 +49,6 @@
 ;;  * @cdk.module rendersvg
 ;;  * @cdk.bug 2403250
 ;;  */
-
-;; Target
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defn parsesmiles [smiles]
-  ; return an IAtomContainer from smiles input
-  (let [builder (SilentChemObjectBuilder/getInstance)
-        sp      (SmilesParser. builder)]
-       (.parseSmiles sp smiles)))
-
-
-;; example IAtom Container
-(def caffeine (parsesmiles "CN1C=NC2=C1C(=O)N(C(=O)N2C)C"))
 
 
 ; SVG Helper Functions
@@ -121,10 +97,6 @@
   (cons :g content))
 
 
-; SVG Conversion
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-
 (defn makepolygon [x1 y1 fs]
   ;take and x and y value as well as the fontsize and return a polygon to
   ; be used as a backstop behing the letters
@@ -142,10 +114,8 @@
     (polygon [tlx,tly trx,try rtx,rty rbx,rby brx,bry blx,bly lbx,lby ltx,lty])))
 
 (defn drawbond [bond]
-  (let [x1 (:x1 bond)
-        y1 (:y1 bond)
-        x2 (:x2 bond)
-        y2 (:y2 bond) ]
+  (let [x1 (:x1 bond)  y1 (:y1 bond)
+        x2 (:x2 bond)  y2 (:y2 bond) ]
     (line x1 y1 x2 y2)))
 
 (defn drawatom [at]
@@ -156,30 +126,21 @@
     (makepolygon x y 10)
     (text {:x x :y y} (str element)))))
 
-(defn drawmol [mol]
+(defn drawmol [mol x y]
   (let [bonds (:bonds mol)
         atoms (:atoms mol)
         lines (map drawbond bonds)
         drawnatoms (map drawatom atoms)]
+     (svg {:x x :y y}
      (group
           (apply group lines)
-          (apply group drawnatoms))))
+          (apply group drawnatoms)))))
 
 
-(defn get2D [mol]
-  (let [ ;; Generate Coordinates and Structure Information for the Molecule
-         sdg   (doto (new StructureDiagramGenerator)
-                     (.setMolecule mol)
-                     (.generateCoordinates))
-         mol2d (.getMolecule sdg)]
-         mol2d))
-
-(def caffeine2D (get2D caffeine))
-
+;Convert IAtomContainers to Cljure DataStrutures
 (defrecord Atom [element x y] )
 (defrecord Bond [order x1 y1 x2 y2])
 (defrecord Molecule [ atoms bonds])
-
 
 (defn ->Atom [iatom]
    ;Iatom to Atom
@@ -205,162 +166,144 @@
          bonds (map ->Bond (.bonds iatomcontainer))]
          (Molecule. atoms bonds)))
 
-(def caff (->Mol caffeine2D))
-
-(.atoms caff)
 
 
-(defn tosvg [Mol]
-  (let [makeline (fn [b] (line (:x1 b) (:y1 b) (:x2 b) (:y2 b)  ))
-        makeatom (fn [a] (line (:x1 b) (:y1 b) (:x2 b) (:y2 b)  ))
-        bonds (.bond mol)]))
+;; Make and Draw a Molecule
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn parsesmiles [smiles]
+  ; return an IAtomContainer from smiles input
+  (let [builder (SilentChemObjectBuilder/getInstance)
+        sp      (SmilesParser. builder)]
+       (.parseSmiles sp smiles)))
+
+
+(defn get2D [mol]
+  (let [ ;; Generate Coordinates and Structure Information for the Molecule
+         sdg   (doto (new StructureDiagramGenerator)
+                     (.setMolecule mol)
+                     (.generateCoordinates))
+         mol2d (.getMolecule sdg)]
+         mol2d))
+
+(def caffeine2D (-> (parsesmiles "CN1C=NC2=C1C(=O)N(C(=O)N2C)C")
+                     (get2D)
+                     (->Mol)))
+
+
+(defn update-vals [map vals f]
+  (reduce #(update-in % [%2] f) map vals))
+
+(defn scale [Mol scalefactor]
+     (let [mult  (fn [x] (* scalefactor x))
+           atoms (.atoms Mol)
+           bonds (.bonds Mol)
+           updatedatoms (map #(update-vals % [:x :y]  mult) atoms)
+           updatedbonds (map #(update-vals % [:x1 :y1 :x2 :y2] mult) bonds)]
+       (Molecule. updatedatoms updatedbonds )))
+
+(defn translate [Mol amount ks]
+     (let [move  (fn [x] (+ amount x))
+           atoms (.atoms Mol)
+           bonds (.bonds Mol)
+           updatedatoms (map #(update-vals % ks move) atoms)
+           updatedbonds (map #(update-vals % ks move) bonds)]
+       (Molecule. updatedatoms updatedbonds )))
+
+(translate caffeine2D 20 :x)
+
+(reduce #(assoc %1 %2 (str "X-" (%1 %2)))
+        mymap
+        [:a :b])
+
+(defn mult [x] (* x 2))
+(def m1 {:a 2 :b 3})
+(update-vals m1 [:a :b] inc)
+(def m [{:a 2 :b 3} {:a 2 :b 5}])
+(map #(update-vals % [:a :b] mult) m)
+
+caffeine2D
+
+(scale caffeine2D 10)
+(= caffeine2D (scale caffeine2D 1))
+(def aa (scale caffeine2D 100))
+(first (.atoms aa))
+
+(spit "test.html" (str (emit (drawmol (scale caffeine2D 50) 100 100))))
+(spit "test.html" (str (emit (drawmol aa 100 100))))
+
+(drawmol aa 100 100)
+
+
+;; to do: Defs are text as path elements  -not sure I want to do that yet
 
 
 
+;; 		svg.append(SVGGenerator.HEADER);
+;; 		newline();
+;; 		svg.append("<defs>");
+;; 		tgpadding = 4;
+;; 		vbpadding = 40;
+;; 		trscale = 0.03;
+;; 		subscale = trscale*0.7;
+;; 		subshift = 0.5;
+;; 	}
+
+;; 	private void writeDEFS (TextGroupElement e) {
+;; 		if (e.text.length()>1 && !tgMap.containsKey(e.text))
+;; 			tgMap.put(e.text, new Point2d(0,0));
+;; 		for (char c : e.text.toCharArray()) {
+;; 			String idstr = "Atom-" + c;
+;; 			GlyphMetrics m = the_fm.map.get((int) c);
+;; 			if (!ptMap.containsKey((int) c))
+;; 				ptMap.put((int) c, new Point2d(m.xMax, m.yMax - m.yMin));
+;; 			if(!tcList.contains(idstr)) {
+;; 				tcList.add(idstr);
+;; 				newline();
+;; 				svg.append (String.format(
+;; 						"  <path id=\"%s\" transform=\"scale(%1.3f,%1.3f)\" d=\"%s\" />",
+;; 						idstr, trscale, -trscale, m.outline));
+;; 			}
+;; 		}
+
+;; 		// Set hyd and hPos according to entry
+;; 		int hyd=0, hPos=0;
+;; 		for (TextGroupElement.Child ch : e.children) {
+;; 			if (ch.text.equals ("H")) {
+;; 				if (ch.subscript == null) hyd=1;
+;; 				else if (ch.subscript.equals("2")) hyd=2;
+;; 				else hyd=3;
+;; 				if (ch.position==TextGroupElement.Position.E) hPos=1;
+;; 				else if (ch.position==TextGroupElement.Position.W) hPos=-1;
+;; 			}
+;; 		}
+;; 		if (hyd>0) {
+;; 			if (!tcList.contains("Atom-H")) {
+;; 				tcList.add("Atom-H");
+;; 				GlyphMetrics m = the_fm.map.get((int) "H".charAt(0));
+;; 				svg.append (String.format(
+;; 						"  <path id=\"Atom-H\" transform=\"scale(%1.3f,%1.3f)\" d=\"%s\" />",
+;; 						trscale, -trscale, m.outline));
+;; 			}
+;; 			if (hyd>=2) {
+;; 				char c = '2';
+;; 				if (hyd==3) c='3';
+;; 				String idstr = "Atom-" + c;
+;; 				GlyphMetrics m = the_fm.map.get((int) c);
+;; 				if(!tcList.contains(idstr)) {
+;; 					tcList.add(idstr);
+;; 					newline();
+;; 					svg.append (String.format(
+;; 							"  <path id=\"%s\" transform=\"scale(%1.4f,%1.4f)\" d=\"%s\" />",
+;; 							idstr, subscale, -subscale, m.outline));
+;; 				}
+;; 			}
+;; 		}
+;; 	}
 
 
-public class SVGGenerator implements IDrawVisitor {
 
-    /**
-     * The renderer model cannot be set by the constructor as it needs to
-     * be managed by the Renderer.
-     */
-	private RendererModel rendererModel;
-
-	public static final String HEADER = "<?xml version=\"1.0\"?>\n" +
-			"<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\"\n" +
-			"\"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n" +
-			"<svg xmlns=\"http://www.w3.org/2000/svg\" " +
-			"xmlns:xlink=\"http://www.w3.org/1999/xlink\" " +
-			"viewBox=\"0 0 1234567890\">\n" +
-			"<g transform=\"translate(12345,67890)\">";
-
-	private final StringBuffer svg = new StringBuffer();
-	private FreeSansBoldGM the_fm;
-	private AffineTransform transform;
-	private List<IRenderingElement> elList;
-	private List<String> tcList;
-	private HashMap<String,Point2d> tgMap;
-	private HashMap<Integer,Point2d> ptMap;
-	private List<Rectangle2D> bbList;
-	private double trscale, subscale, subshift, tgpadding, vbpadding;
-	private Rectangle2D bbox;
-
-	//------------------------------------------------------------------
-
-	public SVGGenerator() {
-		the_fm = new FreeSansBoldGM();
-		the_fm.init();
-		elList = new ArrayList<IRenderingElement>();
-		tcList = new ArrayList<String>();
-		tgMap = new HashMap<String,Point2d>();
-		ptMap = new HashMap<Integer,Point2d>();
-		bbList = new ArrayList<Rectangle2D>();
-		bbox = null;
-
-		svg.append(SVGGenerator.HEADER);
-		newline();
-		svg.append("<defs>");
-		tgpadding = 4;
-		vbpadding = 40;
-		trscale = 0.03;
-		subscale = trscale*0.7;
-		subshift = 0.5;
-	}
-
-	private void newline() {
-		svg.append("\n");
-	}
-
-	public double[] transformPoint(double x, double y) {
-        double[] src = new double[] {x, y};
-        double[] dest = new double[2];
-        this.transform.transform(src, 0, dest, 0, 1);
-        return dest;
-    }
-
-	public double[] invTransformPoint (double x, double y) {
-        double[] src = new double[] {x, y};
-        double[] dest = new double[2];
-        try {
-        	this.transform.createInverse().transform(src, 0, dest, 0, 1);
-        } catch (NoninvertibleTransformException e) {
-        	System.err.println ("Cannot invert transform!\n");
-        }
-        return dest;
-    }
-
-	/**
-	 * Fills two lists: tcList contains all characters used in
-	 * atoms, tgList has all strings. We also write the character
-	 * paths immediately as DEFS into the SVG, for reference.
-	 *
-	 * @param e
-	 */
-	private void writeDEFS (TextGroupElement e) {
-		if (e.text.length()>1 && !tgMap.containsKey(e.text))
-			tgMap.put(e.text, new Point2d(0,0));
-		for (char c : e.text.toCharArray()) {
-			String idstr = "Atom-" + c;
-			GlyphMetrics m = the_fm.map.get((int) c);
-			if (!ptMap.containsKey((int) c))
-				ptMap.put((int) c, new Point2d(m.xMax, m.yMax - m.yMin));
-			if(!tcList.contains(idstr)) {
-				tcList.add(idstr);
-				newline();
-				svg.append (String.format(
-						"  <path id=\"%s\" transform=\"scale(%1.3f,%1.3f)\" d=\"%s\" />",
-						idstr, trscale, -trscale, m.outline));
-			}
-		}
-
-		// Set hyd and hPos according to entry
-		int hyd=0, hPos=0;
-		for (TextGroupElement.Child ch : e.children) {
-			if (ch.text.equals ("H")) {
-				if (ch.subscript == null) hyd=1;
-				else if (ch.subscript.equals("2")) hyd=2;
-				else hyd=3;
-				if (ch.position==TextGroupElement.Position.E) hPos=1;
-				else if (ch.position==TextGroupElement.Position.W) hPos=-1;
-			}
-		}
-		if (hyd>0) {
-			if (!tcList.contains("Atom-H")) {
-				tcList.add("Atom-H");
-				GlyphMetrics m = the_fm.map.get((int) "H".charAt(0));
-				svg.append (String.format(
-						"  <path id=\"Atom-H\" transform=\"scale(%1.3f,%1.3f)\" d=\"%s\" />",
-						trscale, -trscale, m.outline));
-			}
-			if (hyd>=2) {
-				char c = '2';
-				if (hyd==3) c='3';
-				String idstr = "Atom-" + c;
-				GlyphMetrics m = the_fm.map.get((int) c);
-				if(!tcList.contains(idstr)) {
-					tcList.add(idstr);
-					newline();
-					svg.append (String.format(
-							"  <path id=\"%s\" transform=\"scale(%1.4f,%1.4f)\" d=\"%s\" />",
-							idstr, subscale, -subscale, m.outline));
-				}
-			}
-		}
-	}
-
-	/**
-	 * In this first pass, visiting elements are copied to
-	 * a list, and DEFS/PATH elements are written for all TextGroups.
-	 */
-	public void visit(IRenderingElement element) {
-		elList.add(element);
-
-		if (element instanceof ElementGroup)
-			((ElementGroup) element).visitChildren(this);
-        else if (element instanceof TextGroupElement)
-            writeDEFS ((TextGroupElement) element);
-	}
+; Ellipse elements to co behind text
 
 	public void draw (OvalElement oval) {
 		newline();
@@ -381,7 +324,8 @@ public class SVGGenerator implements IDrawVisitor {
 				x + r, y + r, r, r));
 	}
 
-	public void draw (AtomSymbolElement atomSymbol) {
+; Atom elements
+  public void draw (AtomSymbolElement atomSymbol) {
 		newline();
 		double[] p = transformPoint(atomSymbol.x, atomSymbol.y);
 		svg.append(String.format(
@@ -394,29 +338,10 @@ public class SVGGenerator implements IDrawVisitor {
 				));
 	}
 
-	// this is a stupid method, but no idea how else to do it...
-	private String toColorString(Color color) {
-		if (color == Color.RED) {
-			return "red";
-		} else if (color == Color.BLUE) {
-			return "blue";
-		} else {
-			return "black";
-		}
-	}
 
-	public void draw (TextElement textElement) {
-		newline();
-		double[] p = transformPoint(textElement.x, textElement.y);
-		svg.append(String.format(
-				"<text x=\"%s\" y=\"%s\">%s</text>",
-				p[0],
-				p[1],
-				textElement.text
-				));
-	}
 
-	/**
+
+  /**
 	 * At the time of this call, all that we need is in place:
 	 * the SVG character macros are written and the bboxes computed.
 	 * The textgroup text is now placed with its center at the
@@ -489,6 +414,8 @@ public class SVGGenerator implements IDrawVisitor {
 			}
 		}
 	}
+
+
 
 	/**
 	 * In this second pass, everything except bonds (and arrows)
@@ -880,20 +807,3 @@ public class SVGGenerator implements IDrawVisitor {
 				pA[0],pA[1]
 				));
 
-	}
-
-    public void setTransform(AffineTransform transform) {
-		this.transform = transform;
-		this.transform.setToScale(30, -30);
-//		System.err.println(transform.toString());
-//		System.err.println(String.format("scale=%f zoom=%f\n", transform.getScaleX(), transform.getScaleY()));
-	}
-
-    public void setFontManager(IFontManager fontManager) {
-    }
-
-    public void setRendererModel(RendererModel rendererModel) {
-        this.rendererModel = rendererModel;
-    }
-
-}
