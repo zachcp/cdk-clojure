@@ -116,7 +116,7 @@
 (defn drawbond [bond]
   (let [x1 (:x1 bond)  y1 (:y1 bond)
         x2 (:x2 bond)  y2 (:y2 bond) ]
-    (line x1 y1 x2 y2)))
+    (line x1 y1 x2 y2 :stroke "#006600" :stroke-width 3 )))
 
 (defn drawatom [at]
   (let [element (:element at)
@@ -126,15 +126,14 @@
     (makepolygon x y 10)
     (text {:x x :y y} (str element)))))
 
-(defn drawmol [mol x y]
+(defn drawmol [mol height width]
   (let [bonds (:bonds mol)
         atoms (:atoms mol)
         lines (map drawbond bonds)
         drawnatoms (map drawatom atoms)]
-     (svg {:x x :y y}
-     (group
+     (svg {:height height :width width}
           (apply group lines)
-          (apply group drawnatoms)))))
+          (apply group drawnatoms))))
 
 
 ;Convert IAtomContainers to Cljure DataStrutures
@@ -194,7 +193,7 @@
 (defn update-vals [map vals f]
   (reduce #(update-in % [%2] f) map vals))
 
-(defn scale [Mol scalefactor]
+(defn scale [scalefactor Mol ]
      (let [mult  (fn [x] (* scalefactor x))
            atoms (.atoms Mol)
            bonds (.bonds Mol)
@@ -202,37 +201,31 @@
            updatedbonds (map #(update-vals % [:x1 :y1 :x2 :y2] mult) bonds)]
        (Molecule. updatedatoms updatedbonds )))
 
-(defn translate [Mol amount ks]
+(defn translate-x [amount Mol ]
      (let [move  (fn [x] (+ amount x))
            atoms (.atoms Mol)
            bonds (.bonds Mol)
-           updatedatoms (map #(update-vals % ks move) atoms)
-           updatedbonds (map #(update-vals % ks move) bonds)]
-       (Molecule. updatedatoms updatedbonds )))
+           updatedatoms (map #(update-in % [:x] move) atoms)
+           updatedbonds (map #(update-vals % [:x1 :x2] move) bonds)]
+       (Molecule. updatedatoms updatedbonds)))
 
-(translate caffeine2D 20 :x)
+(defn translate-y [amount Mol ]
+     (let [move  (fn [x] (+ amount x))
+           atoms (.atoms Mol)
+           bonds (.bonds Mol)
+           updatedatoms (map #(update-in % [:y] move) atoms)
+           updatedbonds (map #(update-vals % [:y1 :y2] move) bonds)]
+       (Molecule. updatedatoms updatedbonds)))
 
-(reduce #(assoc %1 %2 (str "X-" (%1 %2)))
-        mymap
-        [:a :b])
 
-(defn mult [x] (* x 2))
-(def m1 {:a 2 :b 3})
-(update-vals m1 [:a :b] inc)
-(def m [{:a 2 :b 3} {:a 2 :b 5}])
-(map #(update-vals % [:a :b] mult) m)
+(spit "test.html" (str (emit( drawmol
+                        (->> caffeine2D
+                             (translate-x 10)
+                             (translate-y 10)
+                             (scale 15))
+                         400
+                         400))))
 
-caffeine2D
-
-(scale caffeine2D 10)
-(= caffeine2D (scale caffeine2D 1))
-(def aa (scale caffeine2D 100))
-(first (.atoms aa))
-
-(spit "test.html" (str (emit (drawmol (scale caffeine2D 50) 100 100))))
-(spit "test.html" (str (emit (drawmol aa 100 100))))
-
-(drawmol aa 100 100)
 
 
 ;; to do: Defs are text as path elements  -not sure I want to do that yet
