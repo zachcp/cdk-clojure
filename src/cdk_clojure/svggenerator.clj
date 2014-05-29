@@ -1,6 +1,7 @@
 ;https://github.com/JChemPaint/jchempaint/blob/b0b34cb965c80eaecc75d5ba5f18f1f7cb81d42f/src/main/org/openscience/jchempaint/renderer/visitor/SVGGenerator.java
 
 (ns cdk-clojure.svg
+  (:use [analemma.xml])
   (:require [clojure.java.io :as io])
   (:import [org.openscience.cdk.layout StructureDiagramGenerator]
            [org.openscience.cdk.smiles SmilesParser]
@@ -18,13 +19,12 @@
            [javax.vecmath Point2d Vector2d Vector4d]
            [javax.imageio ImageIO]
            [hiccup.core]
-           [analemma.svg] ))
+           [analemma.svg]
+           [org.openscience.jchempaint.renderer.visitor SVGGenerator]))
 
-(use 'analemma.xml)
+;(use 'analemma.xml)
 
 ; convert to allow conversion directl
-
-
 ;import java.awt.geom.Rectangle2D.Double;
 
 ;; /**
@@ -97,7 +97,7 @@
   (cons :g content))
 
 
-(defn makepolygon [x1 y1 fs]
+(defn makepolygon [x1 y1 fs & options]
   ;take and x and y value as well as the fontsize and return a polygon to
   ; be used as a backstop behing the letters
   (let [ dlarge (/ fs 2)
@@ -111,7 +111,7 @@
          blx (- x1 dsmall)  bly (+ y1 dlarge)
          lbx (- x1 dlarge)  lby (+ y1 dsmall)
          ltx (- x1 dlarge)  lty (- y1 dsmall) ]
-    (polygon [tlx,tly trx,try rtx,rty rbx,rby brx,bry blx,bly lbx,lby ltx,lty])))
+    (polygon [tlx,tly trx,try rtx,rty rbx,rby brx,bry blx,bly lbx,lby ltx,lty ] :stroke 0 :fill "white")))
 
 (defn drawbond [bond]
   (let [x1 (:x1 bond)  y1 (:y1 bond)
@@ -220,9 +220,9 @@
 
 (spit "test.html" (str (emit( drawmol
                         (->> caffeine2D
-                             (translate-x 10)
-                             (translate-y 10)
-                             (scale 15))
+                             (translate-x 8)
+                             (translate-y 5)
+                             (scale 40))
                          400
                          400))))
 
