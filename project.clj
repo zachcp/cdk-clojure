@@ -7,6 +7,7 @@
   :main ^:skip-aot cdk-clojure.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}}
+  :plugins [[lein-gorilla "0.2.0"]]
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [org.openscience.cdk/cdk-annotation "1.5.5"]
                  [org.openscience.cdk/cdk-atomtype "1.5.5"]
@@ -68,7 +69,12 @@
                  [prismatic/schema   "0.2.0"]
                  [prismatic/plumbing "0.2.0"]
                  [seesaw "1.4.4"]
+                 [hiccup "1.0.5"]
+                 [org.clojars.pallix/analemma "1.0.0"]
+                 ;[org.openscience.cdk/jchempaint "3.3-1210"]
+                 [org.openscience.jchempaint/jchempaint-hotfix "3.4"]
                   ]
 
-  :repositories [["ebi-repo" "http://www.ebi.ac.uk/intact/maven/nexus/content/repositories/ebi-repo" ]]
-  )
+  :repositories [["ebi-repo" "http://www.ebi.ac.uk/intact/maven/nexus/content/repositories/ebi-repo" ]
+                 ;["plovdiv"  "http://ambit.uni-plovdiv.bg:8083/nexus/service/local/repositories/thirdparty/content" ]
+                 ] )
