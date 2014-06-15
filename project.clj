@@ -73,6 +73,7 @@
                  [org.clojars.pallix/analemma "1.0.0"]
                  ;[org.openscience.cdk/jchempaint "3.3-1210"]
                  [org.openscience.jchempaint/jchempaint-hotfix "3.4"]
+                 [im.chit/iroh "0.1.10"]
                   ]
 
   :repositories [["ebi-repo" "http://www.ebi.ac.uk/intact/maven/nexus/content/repositories/ebi-repo" ]
