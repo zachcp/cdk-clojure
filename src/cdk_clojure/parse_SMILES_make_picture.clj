@@ -1,42 +1,23 @@
-(ns cdk-clojure.core
-  (:use [clojure.java.javadoc]
-        [seesaw.core])
-  (:require [clojure.string :as string])
-  (:import [org.openscience.cdk.smiles SmilesParser]
-           [org.openscience.cdk DefaultChemObjectBuilder]
-           [org.openscience.cdk.tools.manipulator AtomContainerManipulator]
-           [org.openscience.cdk CDKConstants]
-           [org.openscience.cdk.fingerprint MACCSFingerprinter]
-           [org.openscience.cdk.interfaces IAtomContainer]
-           [org.openscience.cdk.layout StructureDiagramGenerator]
+;Parse the smiels for caffeine and create an image. based on http://ctr.wikia.com/wiki/Depict_a_compound_as_an_image
+(ns drawmolecule.core
+  (:require [clojure.java.io :as io])
+  (:import [org.openscience.cdk.layout StructureDiagramGenerator]
+           [org.openscience.cdk.smiles SmilesParser]
+           [org.openscience.cdk.interfaces IChemObjectBuilder IChemObject]
+           [org.openscience.cdk.silent SilentChemObjectBuilder]
            [org.openscience.cdk.renderer AtomContainerRenderer ]
            [org.openscience.cdk.renderer.font AWTFontManager ]
            [org.openscience.cdk.renderer.generators BasicSceneGenerator BasicBondGenerator BasicAtomGenerator]
            [org.openscience.cdk.renderer.visitor  AWTDrawVisitor]
            [org.openscience.cdk.templates MoleculeFactory]
-
-           [java.awt Rectangle Graphics2D Color Graphics]
+           [java.awt Rectangle Graphics2D Color]
            [java.awt.image BufferedImage]
            [java.util ArrayList]
            [javax.imageio ImageIO]))
 
-;minimal functions desired:
-; parsing smarts,
-; making an image
-; calculating 2D coordinates of a molecule
-; outputing a simple clojure map of the molecule
-;    for this one we should define types
-; output for chemdoodleweb JSON
 
-(defn parse-smiles [smiles]
-  "return an IAtomContainer from smiles input"
-  (let [builder (SilentChemObjectBuilder/getInstance)
-        sp      (SmilesParser. builder)]
-    (.parseSmiles sp smiles)))
-
-(defn draw-molecule
-  "take an IAomContainer and make a drawing"
-  [ ^IAtomContainer molecule, width, height, filename ]
+(defn generate_molecule_image
+  [ molecule, width, height, filename ]
   (let [ ;; Generate Coordinates and Structure Information for the Molecule
          sdg   (doto (new StructureDiagramGenerator)
                  (.setMolecule molecule)
@@ -58,11 +39,13 @@
     (ImageIO/write image "PNG" (io/file filename))))
 
 
-(defn IAtomContainer->clj
-  "convert IAtom Container to Chemdoodle JSON Format"
-  [^IAtomContainer mol]
-    (let [x ]))
+(defn parsesmiles [smiles]
+  ; return an IAtomContainer from smiles input
+  (let [builder (SilentChemObjectBuilder/getInstance)
+        sp      (SmilesParser. builder)]
+    (.parseSmiles sp smiles)))
 
-(defn IAtomContainer->JSON
-  "convert IAtom Container to Chemdoodle JSON Format"
-  [mol])
+
+(def caffeine (parsesmiles "CN1C=NC2=C1C(=O)N(C(=O)N2C)C"))
+; save a representation of it
+(generate_molecule_image caffeine 250 250 "caffeine.png")

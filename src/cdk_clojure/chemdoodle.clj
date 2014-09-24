@@ -14,7 +14,7 @@
            [javax.imageio ImageIO]))
 
 
-; chemdoodle JSON format
+; chemdoodle JSON format()
 ; molecule and shape arrays
 ; { "m": [{},{},{}] ,
 ;   "s": [{},{},{}]}
