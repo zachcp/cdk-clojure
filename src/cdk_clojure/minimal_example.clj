@@ -3,7 +3,8 @@
 
 (ns cdk-clojure.core
   (:require [clojure.java.io :as io])
-  (:import [org.openscience.cdk.layout StructureDiagramGenerator]
+  (:import [org.openscience.jchempaint.renderer.visitor SVGGenerator]
+           [org.openscience.cdk.layout StructureDiagramGenerator]
            [org.openscience.cdk.renderer AtomContainerRenderer ]
            [org.openscience.cdk.renderer.font AWTFontManager ]
            [org.openscience.cdk.renderer.generators BasicSceneGenerator BasicBondGenerator BasicAtomGenerator]
@@ -35,7 +36,7 @@
           (.getMolecule sdg)))
 
 ; generate the coordinates
-(def triazole2D (makemol triazole))
+(def triazole2D (makemol triazole1))
 
 
 ;generators make the image elements
@@ -51,11 +52,14 @@
 
 ;the renderer needs to have a toolkit-specific font manager
 (def renderer (AtomContainerRenderer. gen (new AWTFontManager)))
-
+(def svgout (new SVGGenerator))
 
 ; Run Setup and then paint the molecule
 (-> renderer (. setup triazole2D drawArea))
-(-> renderer (. paint triazole2D (new AWTDrawVisitor g) ))
+;(-> renderer (. paint triazole2D (new AWTDrawVisitor g) ))
+(-> renderer (. paint triazole2D svgout ))
+(.getResult svgout)
+
 
 ;Output to a file
-(ImageIO/write image "PNG" (io/file "/Users/zachpowers/Desktop/triazole.png") )
+(ImageIO/write image "SVG" (io/file "/Users/zachpowers/Desktop/triazole.svg") )

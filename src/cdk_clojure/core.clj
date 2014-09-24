@@ -16,7 +16,8 @@
            [org.openscience.cdk.renderer.generators BasicSceneGenerator BasicBondGenerator BasicAtomGenerator]
            [org.openscience.cdk.renderer.visitor  AWTDrawVisitor]
            [org.openscience.cdk.templates MoleculeFactory]
-           [java.awt Rectangle Graphics2D Color]
+
+           [java.awt Rectangle Graphics2D Color Graphics]
            [java.awt.image BufferedImage]
            [java.util ArrayList]
            [java.imageio]))
@@ -26,7 +27,6 @@
 
 (def w 200)
 (def h 200)
-
 
 ;the draw area and the image should be the same size
 (def drawArea (new Rectangle w h))
@@ -51,7 +51,8 @@
      (let [sdg (doto (new StructureDiagramGenerator)
                      (.setMolecule mol)
                      (.generateCoordinates))]
-          (.getMolecule sdg)))
+          (-> sdg (. getMolecule))
+       ))
 
 (def triazole2D (makemol triazole))
 ;generators make the image elements
@@ -68,7 +69,6 @@
 (type gen)
 (type (first gen))
 
-
 ;the renderer needs to have a toolkit-specific font manager
 (def renderer (AtomContainerRenderer. gen (new AWTFontManager)))
 
@@ -77,6 +77,28 @@
 (-> renderer (. setup triazole2D drawArea))
 (type renderer)
 
+<<<<<<< HEAD
+(javadoc  AtomContainerRenderer)
+
+(-> renderer (. setup triazole2D drawArea))
+
+(def g2 (doto ()))
+
+(doto (Graphics2D) (. getGraphics))
+(defn- render-lines-to-graphics [lines paper-color height width
+                                 #^Graphics2D g w h ]
+  (doto g
+    (.setColor @paper-color)
+    (.fillRect 0 0 w h))
+    (draw-lines lines g (/ w @width) (/ h @height)))
+
+
+(defn- drawMols [^Graphics2D g width height ]
+  (doto g
+    (. getGraphics)
+    (.setColor Color.White)
+    (.fillRect 0 0 white height)))
+=======
 (def ^Graphics2D g (doto (image. getGraphics)
                          (.setcolor Color.WHITE)
                           (.fillRect 0 0 w h)))
@@ -100,6 +122,7 @@ g2.fillRect(0, 0, WIDTH, HEIGHT);
 Graphics2D g2 = (Graphics2D)image.getGraphics();
 g2.setColor(Color.WHITE);
 g2.fillRect(0, 0, WIDTH, HEIGHT);
+>>>>>>> 475475fe958f09d96e5472f86d0466835d455106
 
 
 
@@ -140,6 +163,7 @@ public class SimpleDepiction {
       (. getGraphics)
       (.setColor (. Color WHITE))
       (.fillRect 0 0 width height))))
+
 
 
 ; paint the background
